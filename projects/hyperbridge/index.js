@@ -256,3 +256,4 @@ module.exports = {
   unichain: { tvl },
   methodology: "Calculates TVL by querying Hyperbridge's GraphQL API for chain-specific USD amounts (amountInUsd - amountOutUsd), representing the net value of tokens bridged to each chain. Falls back to contract balance checking if API is unavailable."
 };
+
