@@ -24,33 +24,6 @@ const DOT_BRIDGE_CONTRACT = '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8';
 // Chains where DOT bridge contract exists
 const DOT_CONTRACT_CHAINS = ['ethereum', 'arbitrum', 'optimism', 'base', 'bsc', 'xdai']; // xdai = gnosis
 
-// Asset ID to token mapping (based on actual bridged assets from GraphQL data)
-const ASSET_ID_MAP = {
-  // Major stablecoin - appears to be USDC based on amounts and chains
-  '0x2c39e61e26a9f54b13049db72ed462371c4675161ad800538eefbb25e5f5531f': {
-    symbol: 'USDC',
-    decimals: 6,
-    getAddress: (chain) => ADDRESSES[chain]?.USDC
-  },
-  // Major token - appears to be USDT based on amounts 
-  '0x9bd00430e53a5999c7c603cfc04cbdaf68bdbc180f300e4a2067937f57a0534f': {
-    symbol: 'USDT', 
-    decimals: 6,
-    getAddress: (chain) => ADDRESSES[chain]?.USDT
-  },
-  // Another asset - could be DAI
-  '0x2a4161abff7b056457562a2e82dd6f5878159be2537b90f19dd1458b40524d3f': {
-    symbol: 'DAI',
-    decimals: 18,
-    getAddress: (chain) => ADDRESSES[chain]?.DAI
-  },
-  // DOT token - major asset for Polkadot <> EVM bridging (NOTE: not a standard ERC-20)
-  '0xdot': {
-    symbol: 'DOT',
-    decimals: 10, // DOT has 10 decimals
-    getAddress: (chain) => null // Not a standard ERC-20 token, handle separately
-  }
-};
 
 // Query to get TVL data from GraphQL API (back to working version)
 async function getHyperbridgeTVL() {
@@ -87,7 +60,6 @@ async function getHyperbridgeTVL() {
 
 // Calculate TVL using GraphQL data
 async function calculateTVLFromAPI(api) {
-  console.log(`[${api.chain}] Starting enhanced GraphQL TVL calculation...`);
   
   try {
     const data = await getHyperbridgeTVL();
@@ -95,6 +67,8 @@ async function calculateTVLFromAPI(api) {
       console.log(`[${api.chain}] No GraphQL data available, using contract fallback`);
       return await fallbackContractTVL(api);
     }
+
+    console.log(`[${api.chain}] Starting enhanced GraphQL TVL calculation...`);
 
     // Analyze the available data to understand the full scope
     const chainStats = data.hyperBridgeChainStats.edges || [];
